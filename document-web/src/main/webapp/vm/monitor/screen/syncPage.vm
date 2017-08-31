@@ -1,0 +1,55 @@
+<div class="col-md-12">
+    <ol class="breadcrumb">
+        <li class="active">操作</li>
+        <li class="active">同步文档转换请求</li>
+    </ol>
+</div>
+<div class="col-md-12">
+    <form role="form">
+        <div class="form-group">
+            <label for="docFileUrl">文件链接地址</label>
+            <input type="text" class="form-control" id="docFileUrl" name="docFileUrl">
+        </div>
+        <div class="form-group">
+            <label for="appIdInput">应用</label>
+            <select class="form-control" name="appIdInput" id="appIdInput">
+                #foreach($app in $!appDOList)
+                    <option value="$app.appId">$app.appName</option>
+                #end
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="callNum">调用次数</label>
+            <input type="number" class="form-control" id="callNum" name="callNum">
+        </div>
+        <button id="syncCallBtn" type="button" class="btn btn-default">模拟同步文档转换请求接口调用</button>
+    </form>
+    <br/>
+    <div id="syncPagePanel" class="panel panel-primary">
+        <div class="panel-heading">
+            同步文档转换请求操作结果展示
+        </div>
+        <div class="panel-body">
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        //模拟同步文档转换请求接口调用
+        $("#syncCallBtn").click(function () {
+            var appId = $("#appIdInput").val().trim();
+            var docFileUrl = $("#docFileUrl").val().trim();
+            var callNum = $("#callNum").val().trim();
+            $.post("${ctxPath}/document/docMonitor/simulateSyncRequest",
+                    {"appId": appId, "docFileUrl": docFileUrl, "callNumber": callNum},
+                    function (result) {
+                        console.log(result);
+                        $("#syncPagePanel div.panel-body").JSONView(result);
+                        setTimeout(function () {
+                            $("#syncCallBtn").removeAttr("disabled");
+                        },1000);
+                    });
+            $("#syncCallBtn").prop("disabled","disabled");
+        });
+    });
+</script>

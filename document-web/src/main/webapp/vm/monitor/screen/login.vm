@@ -1,0 +1,107 @@
+<nav class="navbar-default navbar-fixed-bottom" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header navbar-right" style="vertical-align: middle">
+            <a class="navbar-brand text-center" style="padding: 5px 15px;"  href="#">
+                <h5>${switch_crop}</h5>
+                <h6>${switch_department}</h6>
+            </a>
+        </div>
+    </div>
+</nav>
+<div>
+<div class="bg">
+
+</div>
+<div class="container">
+    <div class="line bouncein">
+        <div class="xs6 xm4 xs3-move xm4-move">
+            <div style="height:150px;"></div>
+            <div class="media media-y margin-big-bottom">
+            </div>
+            <div id="loginTips">
+
+            </div>
+            <div style="text-align: center">
+                <h2>${html_title}</h2>
+            </div>
+            <form action="index.html" method="post">
+                <div class="panel loginbox">
+                    <div class="text-center margin-big padding-big-top"><h1><img src="${ctxPath}/webFrame/timg.jpg" width="50" height="50"></h1></div>
+                    <div class="panel-body" style="padding:30px; padding-bottom:10px; padding-top:10px;">
+                        <div class="form-group">
+                            <div class="field field-icon-right">
+                                <input type="text" class="input input-big" name="userName" placeholder="登录账号"
+                                       data-validate="required:请填写账号"/>
+                                <span class="icon icon-user margin-small"></span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="field field-icon-right">
+                                <input type="password" class="input input-big" name="password" placeholder="登录密码"
+                                       data-validate="required:请填写密码"/>
+                                <span class="icon icon-key margin-small"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding:30px;"><input type="button" id="loginBtn"
+                                                      class="button button-block bg-main text-big input-big" value="登录">
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    $(function () {
+        var publicKey = null;
+        $.post("${ctxPath}/document/login/generatePublicKey", null, function (result) {
+            if (result.success) {
+                publicKey = result.data;
+            }
+
+        }, "json");
+
+
+        $("#loginBtn").click(function () {
+            var userName = $("input[name='userName']").val();
+            var password = $("input[name='password']").val();
+            if (userName == "" || password == "") {
+                return;
+            }
+            var encrypt = new JSEncrypt();
+            encrypt.setPublicKey(publicKey);
+            $("#loginTips").html('<div id="myAlert" class="alert alert-info">' +
+                    '<a href="#" class="close" data-dismiss="alert"></a>' +
+                    '<span>' + "正在登录，请等待..." + '</span>' +
+                    '</div>');
+            $.post("${ctxPath}/document/login/checkLogin", {
+                userName: userName,
+                password: encrypt.encrypt(password)
+            }, function (result) {
+                if (eval("(" + result + ")").code == "LOGIN_SUCCES") {
+                    $("#loginTips").html('<div id="myAlert" class="alert alert-success">' +
+                            '<a href="#" class="close" data-dismiss="alert"></a>' +
+                            '<span>' + eval("(" + result + ")").message + '</span>' +
+                            '</div>');
+                    /* window.location = 'app.htm';*/
+                    window.top.location = '${ctxPath}/monitor/diagramView.htm';
+                } else {
+                    $("#loginTips").html('<div id="myAlert" class="alert alert-danger">' +
+                            '<a href="#" class="close" data-dismiss="alert"></a>' +
+                            '<span>' + eval("(" + result + ")").message + '</span>' +
+                            '</div>');
+                }
+
+            }, "json");
+
+        });
+
+        document.onkeydown = function(e){
+            var ev = document.all ? window.event : e;
+            if(ev.keyCode==13) {
+                $("#loginBtn").trigger("click");
+            }
+        }
+    });
+</script>

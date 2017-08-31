@@ -1,0 +1,39 @@
+<div class="col-md-12">
+    <ol class="breadcrumb">
+        <li class="active">操作</li>
+        <li class="active">网站公告</li>
+    </ol>
+</div>
+<div class="col-md-12">
+    <form>
+        <div class="form-inline text-center">
+            <input type="text" class="form-control" name="searchContent" style="width: 768px;" id="searchContent"
+                   placeholder="taskId或者docFileUrl"/>
+            <input type="button" id="searchBtn" class="btn btn-success" value="搜索">
+        </div>
+    </form>
+    <br/>
+    <div id="searchPanel" class="panel panel-primary">
+        <div class="panel-heading">
+            查询结果展示区
+        </div>
+        <div class="panel-body"></div>
+    </div>
+    <img id="imgTag" src="$!{spring}"/>
+</div>
+<script>
+    $(function () {
+        $("#imgTag").width($(".breadcrumb").width());
+
+        $("#searchBtn").click(
+                function () {
+                    $.post("${ctxPath}/document/docOperation/doc2pdfTask", {
+                        taskId: $("#searchContent").val()
+                        , docFileUrl: $("#searchContent").val()
+                    }, function (data) {
+                        $("#searchPanel div.panel-body").JSONView(data);
+                    });
+                }
+        );
+    });
+</script>

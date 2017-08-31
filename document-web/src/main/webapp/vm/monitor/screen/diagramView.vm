@@ -1,0 +1,75 @@
+<div class="col-md-12">
+    <ol class="breadcrumb">
+        <li class="active">监控</li>
+        <li class="active">图表化展示</li>
+    </ol>
+</div>
+<div class="col-md-12 text-center">
+#*数字区*#
+    <button type="button" class="btn btn-primary">总的请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-info">Waiting请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-warning">Executing请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-success">Success请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-danger">Failure请求数<br/>(<span>0</span>)</button>
+    <br/>
+    <br/>
+#*图表区*#
+    <div>
+        <div id="main" style="width: 800px;height:500px;margin:25px auto;"></div>
+    </div>
+</div>
+<script>
+    $(function () {
+
+        //图表展示
+        var myChart = echarts.init(document.getElementById('main'));
+
+        function refreshPage() {
+            //数字展示
+            $.post("${ctxPath}/document/docMonitor/taskStatusCount", null, function (result) {
+                if (result.success) {
+                    $("button.btn-primary").children("span").text(result.data.allCount);
+                    $("button.btn-info").children("span").text(result.data.waitingCount);
+                    $("button.btn-warning").children("span").text(result.data.executingCount);
+                    $("button.btn-success").children("span").text(result.data.successCount);
+                    $("button.btn-danger").children("span").text(result.data.failureCount);
+
+                    var option = {
+                        title: {
+                            text: '文档转换请求数'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['请求数']
+                        },
+                        xAxis: {
+                            data: ["All", "Waiting", "Executing", "Success", "Failure"]
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '请求数',
+                            type: 'bar',
+                            itemStyle: {
+                                normal: {
+                                    color: function (params) {
+                                        var colorList = ['#337ab7', '#5bc0de', '#f0ad4e', '#5cb85c', '#d9534f'];
+                                        return colorList[params.dataIndex];
+                                    }
+                                }
+                            },
+                            data: [result.data.allCount, result.data.waitingCount, result.data.executingCount, result.data.successCount, result.data.failureCount]
+                        }]
+                    };
+
+                    myChart.setOption(option);
+                }
+
+            }, "json");
+        }
+
+        refreshPage();
+
+        setInterval(refreshPage, 3000);
+
+    });
+</script>

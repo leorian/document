@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <title>${html_title}</title>
+    <link rel="Shortcut Icon" href="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/images/logo.ico">
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/css/bootstrap.min.css">
+
+    <!-- 可选的Bootstrap主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/css/bootstrap-theme.min.css">
+
+#*分页插件jqgrid*#
+    <link rel="stylesheet" href="${ctxPath}/webFrame/jqgrid-5.2.0/jqgrid/css/ui.jqgrid-bootstrap.css"/>
+    <link rel="stylesheet" href="${ctxPath}/webFrame/jquery.jsonview.min.css"/>
+    <style type="text/css">
+
+
+        @media (min-width: 992px) {
+            #nav-bar-left-list {
+                width: 224px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            #nav-bar-left-list {
+                width: 256px;
+            }
+        }
+
+
+    </style>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="${ctxPath}/webFrame/bootstrap-3.3.5/jquery-1.11.3.min.js"></script>
+
+#*分页插件jqgrid*#
+    <script src="${ctxPath}/webFrame/jqgrid-5.2.0/jqgrid/js/i18n/grid.locale-cn.js"></script>
+    <script src="${ctxPath}/webFrame/jqgrid-5.2.0/jqgrid/js/jquery.jqGrid.min.js"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/js/bootstrap.min.js"></script>
+
+    <script src="${ctxPath}/webFrame/underscore-min.js"></script>
+
+    <script src="${ctxPath}/webFrame/echarts.min.js"></script>
+    <script src="${ctxPath}/webFrame/jquery.jsonview.min.js"></script>
+
+
+    <script type="text/javascript">
+        var ctxPath = '$!{ctxPath}';
+        $(function () {
+            $.jgrid.defaults.width = $("#mainWindowPanel").width();
+        });
+    </script>
+    <script>
+        $(function () {
+        });
+    </script>
+</head>
+<body>
+<!-- 头部 -->
+<header id="header" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-collapse collapse header-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="javascript:void(0);"> 登录者：$!{uId}</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="button button-little bg-red" href="${ctxPath}/monitor/login.htm">
+                        <span class="icon-power-off"></span>
+                        退出登录
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<!-- body -->
+<div class="container">
+    <div class="row" id="ad_common_top" style="display:none;">
+        <div class="col-md-12">
+            <div class="bs-callout bs-callout-danger script"></div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3" style="min-height: 1024px;">
+            <div id="nav-bar-left-list" class="panel-group" role="tablist"
+                 aria-multiselectable="true">
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a href="javascript:void(0);">${html_title}</a>
+                        </h4>
+                    </div>
+                </div>
+
+
+                <div class="panel panel-default">
+                    <div id="nav-bar-38" class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a href="#nav-bar-list-38" data-parent="#nav-bar-left-list" data-toggle="collapse"
+                               aria-expanded="true" aria-controls="nav-bar-list-38"
+                               aria-controls="collapseOne">监控</a>
+                        </h4>
+                    </div>
+                    <div id="nav-bar-list-38"
+                         class="panel-collapse collapse #if($!{menu}=='DiagramView' ||
+                             $!{menu}=='TableView' || $!{menu}=='ManualView')
+                    in
+#end " role="tabpanel"
+                         aria-labelledby="nav-bar-38" aria-expanded="false">
+                        <div class="list-group">
+                            <a href="${ctxPath}/monitor/diagramView.htm" #if($!{menu}=='DiagramView') style="color:blue"
+                            #end class="list-group-item">
+                                图表化展示
+                            </a>
+                            <a href="${ctxPath}/monitor/tableView.htm" #if($!{menu}=='TableView') style="color:blue"
+                            #end class="list-group-item">
+                                列表化展示
+                            </a>
+                            <a href="${ctxPath}/monitor/manualView.htm" #if($!{menu}=='ManualView') style="color:blue"
+                            #end class="list-group-item">
+                                手动控制文档转换请求
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            #*具体应用列表*#
+                <div class="panel panel-default">
+                    <div id="nav-bar-56" class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a href="#nav-bar-list-56" data-parent="#nav-bar-left-list" data-toggle="collapse"
+                               aria-expanded="true" aria-controls="nav-bar-list-56"
+                               aria-controls="collapseOne">应用</a>
+                        </h4>
+                    </div>
+                    <div id="nav-bar-list-56"
+                         class="panel-collapse collapse #if($menu=="AppStatistics" || $menu=="AppPie" || $menu==
+                             "AppServer")
+                    in
+#end " role="tabpanel"
+                         aria-labelledby="nav-bar-56" aria-expanded="false">
+                        <div class="list-group">
+                            <a href="${ctxPath}/monitor/appPie.htm" #if($!{menu}=='AppPie') style="color:blue"
+                            #end class="list-group-item">
+                                应用直观统计图
+                            </a>
+                            <a href="${ctxPath}/monitor/appServer.htm" #if($!{menu}=='AppServer') style="color:blue"
+                            #end class="list-group-item">
+                                文档转换机器分布
+                            </a>
+                            #foreach($app in $!appDOList)
+                                <a href="${ctxPath}/monitor/appStatistics.htm?appId=${app.appId}" #if($menu==
+                                    "AppStatistics" && ${app.mainSelectType})
+                                   style="color: blue;"
+                                #end class="list-group-item" data-appid="${app.appId}">${app.appName}</a>
+                            #end
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div id="nav-bar-72" class="panel-heading" role="tab">
+                        <h4 class="panel-title">
+                            <a href="#nav-bar-list-72" data-parent="#nav-bar-left-list" data-toggle="collapse"
+                               aria-expanded="true" aria-controls="nav-bar-list-72"
+                               aria-controls="collapseOne">操作</a>
+                        </h4>
+                    </div>
+                    <div id="nav-bar-list-72"
+                         class="panel-collapse collapse #if($!{menu}=='AsyncPage' || $!{menu}=='SyncPage'
+                         || $!{menu}=='BatchAsyncPage' || $!{menu} == 'NoticePage')
+                         in
+#end " role="tabpanel"
+                         aria-labelledby="nav-bar-72" aria-expanded="false">
+                        <div class="list-group">
+                            <a href="${ctxPath}/monitor/asyncPage.htm" #if($!{menu}=='AsyncPage')
+                               style="color:blue"
+                            #end class="list-group-item">异步文档转换请求</a>
+                            <a href="${ctxPath}/monitor/syncPage.htm" #if($!{menu}=='SyncPage')
+                               style="color:blue"
+                            #end class="list-group-item">同步文档转换请求</a>
+                            <a href="${ctxPath}/monitor/batchAsyncPage.htm" #if($!{menu}=='BatchAsyncPage')
+                               style="color:blue"
+                            #end class="list-group-item">异步文档转换请求(批量)</a>
+                            <a href="${ctxPath}/monitor/noticePage.htm" #if($!{menu}=='NoticePage')
+                               style="color:blue"
+                            #end class="list-group-item">网站公告</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row" id="ad_nav_left_bottom" style="display:none;">
+                <div class="col-md-12">
+                    <div class="bs-callout bs-callout-danger script"></div>
+                </div>
+            </div>
+        </div>
+        <!-- 导航 -->
+        <div class="col-md-9">
+
+            <div class="row" id="ad_page_top" style="display:none;">
+                <div class="col-md-12">
+                    <div class="bs-callout bs-callout-danger script"></div>
+                </div>
+            </div>
+
+            <div class="row" id="mainWindowPanel">
+                #parse("$screen_placeholder")
+            </div>
+
+            <div class="row" id="ad_page_bottom" style="display:none;">
+                <div class="col-md-12">
+                    <div class="bs-callout bs-callout-danger script"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row" id="ad_common_bottom" style="display:none;">
+        <div class="col-md-12">
+            <div class="bs-callout bs-callout-danger script"></div>
+        </div>
+    </div>
+
+</div>
+<br/>
+<br/>
+<br/>
+<!-- 尾部 -->
+<footer class="footer navbar navbar-default navbar-fixed-bottom">
+    <div class="container">
+        <div class="navbar-collapse collapse header-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="javascript:void(0);"><img src="${ctxPath}/webFrame/timg.jpg" width="50px" height="30px"/>&nbsp;&nbsp;317护</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="button button-little bg-red" href="javascript:void(0);">
+                        <span class="icon-power-off"></span>
+                        ${switch_crop}<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        ${switch_department}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

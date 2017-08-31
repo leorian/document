@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:hsf="http://www.taobao.com/hsf"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       		http://www.taobao.com/hsf
+       		http://www.taobao.com/hsf/hsf.xsd" default-autowire="byName">
+
+    <!--登录信息存储redis-->
+    <bean id="myRedisConfigUtil" class="com.bozhong.myredis.common.MyRedisConfigUtil">
+        <property name="myRedisConfig" ref="myRedisConfig"/>
+    </bean>
+
+
+    <bean id="myRedisConfig" class="com.bozhong.myredis.common.MyRedisConfig">
+        <property name="redisStrMap">
+            <map>
+                <entry key="353" value="${redis_ip}"/>
+            </map>
+        </property>
+
+        <property name="redisPassword">
+            <map>
+                <entry key="353" value="${redis_password}"></entry>
+                <entry key="354" value=""></entry>
+            </map>
+        </property>
+
+    </bean>
+
+    <bean id="myRedisClusterForHessian" class="com.bozhong.myredis.MyRedisClusterForHessian">
+        <constructor-arg value="353"/>
+        <constructor-arg value="myredis"/>
+    </bean>
+
+    <bean class="com.bozhong.document.task.RedisUtil">
+        <property name="myRedisClusterForHessian" ref="myRedisClusterForHessian"/>
+    </bean>
+
+    <!--登录LDAP认证（使用）-->
+    <bean id="lDAPConnectionConfig" class="com.bozhong.config.common.LDAPConnectionConfig" init-method="init">
+        <property name="ldapHost" value="${ldap.ldapHost}"></property>
+        <property name="loginDN" value="${ldap.loginDN}"></property>
+        <property name="password" value="${ldap.password}"></property>
+        <property name="searchBase" value="${ldap.searchBase}"></property>
+        <property name="searchFilter" value="${ldap.searchFilter}"></property>
+    </bean>
+
+    <!--配置中心MongoDB数据库-->
+    <bean id="mongoDBConfig" class="com.bozhong.config.common.MongoDBConfig" init-method="init">
+        <property name="ip" value="${mongodb.ip}"></property>
+        <property name="port" value="${mongodb.port}"></property>
+        <property name="dbName" value="${mongodb.dbName}"></property>
+        <property name="userName" value="${mongodb.userName}"></property>
+        <property name="password" value="${mongodb.password}"></property>
+    </bean>
+
+</beans>

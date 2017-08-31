@@ -1,0 +1,38 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <title>${html_title}</title>
+    <link rel="Shortcut Icon" href="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/images/logo.ico">
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/css/bootstrap.min.css">
+
+    <!-- 可选的Bootstrap主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/css/bootstrap-theme.min.css">
+
+    #*应用页面样式引入*#
+    <link rel="stylesheet" href="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/css/pintuer.css">
+    <link rel="stylesheet" href="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/css/admin.css">
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="${ctxPath}/webFrame/bootstrap-3.3.5/jquery-1.11.3.min.js"></script>
+
+    #*RSA公钥秘钥加密*#
+    <script src="${ctxPath}/webFrame/jsencrypt.min.js"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/js/bootstrap.min.js"></script>
+    
+    <script src="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/js/pintuer.js"></script>
+
+    <script type="text/javascript">
+        var ctxPath='$!{ctxPath}';
+    </script>
+</head>
+<body>
+    #parse("$screen_placeholder")
+</body>
+</html>

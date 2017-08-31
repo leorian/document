@@ -1,0 +1,12 @@
+<div class="col-md-12">
+    <div style="margin: 20px;">
+        <div class="panel panel-info">
+            <div class="panel-heading">
+                <h3 class="panel-title">系统公告</h3>
+            </div>
+            <div class="panel-body">
+                对不起，您没有任何应用的管理权限，请联系运维管理员进行授权！
+            </div>
+        </div>
+    </div>
+</div>

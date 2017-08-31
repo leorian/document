@@ -1,0 +1,60 @@
+<div class="col-md-12">
+    <ol class="breadcrumb">
+        <li class="active">操作</li>
+        <li class="active">异步文档转换请求</li>
+    </ol>
+</div>
+<div class="col-md-12">
+    <form role="form">
+        <div class="form-group">
+            <label for="docFileUrl">文件链接地址</label>
+            <input type="text" class="form-control" id="docFileUrl" name="docFileUrl">
+        </div>
+        <div class="form-group">
+            <label for="appIdInput">应用</label>
+            <select class="form-control" name="appIdInput" id="appIdInput">
+                #foreach($app in $!appDOList)
+                    <option value="$app.appId">$app.appName</option>
+                #end
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="callNum">调用次数</label>
+            <input type="number" class="form-control" id="callNum" name="callNum">
+        </div>
+        <div class="form-group">
+            <label for="callBackUrl">回调地址</label>
+            <input type="text" class="form-control" id="callBackUrl" name="callBackUrl">
+        </div>
+        <button id="asyncCallBtn" type="button" class="btn btn-default">模拟异步文档转换请求接口调用</button>
+    </form>
+    <br/>
+    <div id="asyncPagePanel" class="panel panel-primary">
+        <div class="panel-heading">
+            异步文档转换请求操作结果展示
+        </div>
+        <div class="panel-body">
+        </div>
+    </div>
+</div>
+<script>
+    $(function () {
+        //模拟异步文档转换请求接口调用
+        $("#asyncCallBtn").click(function () {
+            var appId = $("#appIdInput").val().trim();
+            var docFileUrl = $("#docFileUrl").val().trim();
+            var callNum = $("#callNum").val().trim();
+            var callBackUrl = $("#callBackUrl").val().trim();
+            $.post("${ctxPath}/document/docMonitor/simulateAsyncRequest",
+                    {"appId": appId, "docFileUrl": docFileUrl, "callNumber": callNum, "callBackUrl": callBackUrl},
+                    function (result) {
+                        console.log(result);
+                        $("#asyncPagePanel div.panel-body").JSONView(result);
+                        setTimeout(function () {
+                            $("#asyncCallBtn").removeAttr("disabled");
+                        },1000);
+                    });
+            $("#asyncCallBtn").prop("disabled","disabled");
+        });
+    });
+</script>

@@ -1,0 +1,462 @@
+<div class="col-md-12">
+    <ol class="breadcrumb">
+        <li class="active">应用</li>
+        <li class="active">$!{appDO.appName}</li>
+    </ol>
+</div>
+<div class="col-md-12 text-center">
+#*数字区*#
+    <button type="button" class="btn btn-primary">总的请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-info">Waiting请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-warning">Executing请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-success">Success请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-danger">Failure请求数<br/>(<span>0</span>)</button>
+    <br/>
+    <br/>
+#*图表区*#
+    <div>
+        <div id="main" style="width: 800px;height:500px;margin:25px auto;"></div>
+    </div>
+#*详情区*#
+    <ul id="myTab" class="nav nav-tabs">
+        <li class="active">
+            <a href="#waiting" data-toggle="tab">
+                Waiting
+            </a>
+        </li>
+        <li>
+            <a href="#executing" data-toggle="tab">Executing</a>
+        </li>
+        <li>
+            <a href="#success" data-toggle="tab">Success</a>
+        </li>
+        <li>
+            <a href="#failure" data-toggle="tab">Failure</a>
+        </li>
+    </ul>
+    <div id="myTabContent" class="tab-content">
+        <div class="tab-pane fade in active" id="waiting">
+        ##            <p>waiting页面</p>
+            <div style="margin:20px" id="wJqGridPanel">
+                <table id="wJqGrid"></table>
+                <div id="wJqGridPager"></div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="executing">
+        ##            <p>executing页面</p>
+            <div style="margin:20px" id="eJqGridPanel">
+                <table id="eJqGrid"></table>
+                <div id="eJqGridPager"></div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="success">
+        ##            <p>success页面</p>
+            <div style="margin:20px" id="sJqGridPanel">
+                <table id="sJqGrid"></table>
+                <div id="sJqGridPager"></div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="failure">
+        ##            <p>failure页面</p>
+            <div style="margin:20px" id="fJqGridPanel">
+                <table id="fJqGrid"></table>
+                <div id="fJqGridPager"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                    &times;
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    任务详情
+                </h4>
+            </div>
+            <div class="modal-body" id="myModalBody" style="word-break:break-all; word-wrap:break-all;">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                </button>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal -->
+</div>
+
+<script>
+    $(function () {
+
+        //图表展示
+        var myChart = echarts.init(document.getElementById('main'));
+
+        function refreshPage() {
+            //数字展示
+            $.post("${ctxPath}/document/docMonitor/taskStatusCount", {"appId": "$!{appDO.appId}"}, function (result) {
+                if (result.success) {
+                    $("button.btn-primary").children("span").text(result.data.allCount);
+                    $("button.btn-info").children("span").text(result.data.waitingCount);
+                    $("button.btn-warning").children("span").text(result.data.executingCount);
+                    $("button.btn-success").children("span").text(result.data.successCount);
+                    $("button.btn-danger").children("span").text(result.data.failureCount);
+
+                    var option = {
+                        title: {
+                            text: '$!{appDO.appName}文档转换请求数'
+                        },
+                        tooltip: {},
+                        legend: {
+                            data: ['请求数']
+                        },
+                        xAxis: {
+                            data: ["All", "Waiting", "Executing", "Success", "Failure"]
+                        },
+                        yAxis: {},
+                        series: [{
+                            name: '请求数',
+                            type: 'bar',
+                            itemStyle: {
+                                normal: {
+                                    color: function (params) {
+                                        var colorList = ['#337ab7', '#5bc0de', '#f0ad4e', '#5cb85c', '#d9534f'];
+                                        return colorList[params.dataIndex];
+                                    }
+                                }
+                            },
+                            data: [result.data.allCount, result.data.waitingCount, result.data.executingCount, result.data.successCount, result.data.failureCount]
+                        }]
+                    };
+
+                    myChart.setOption(option);
+
+
+                }
+
+            }, "json");
+        }
+
+        refreshPage();
+
+        setInterval(refreshPage, 3000);
+
+    });
+</script>
+
+<script>
+    $(function () {
+
+        function add0(m) {
+            return m < 10 ? '0' + m : m
+        }
+
+        function format(timestamp) {
+            //timestamp是整数，否则要parseInt转换,不会出现少个0的情况
+
+            var time = new Date(timestamp);
+            var year = time.getFullYear();
+            var month = time.getMonth() + 1;
+            var date = time.getDate();
+            var hours = time.getHours();
+            var minutes = time.getMinutes();
+            var seconds = time.getSeconds();
+            return year + '-' + add0(month) + '-' + add0(date) + ' ' + add0(hours) + ':' + add0(minutes) + ':' + add0(seconds);
+        }
+
+        $.jgrid.defaults.width = $("ol.breadcrumb").width();
+        function jqgridOptaionBuilder(taskStatus, width, pager) {
+            return {
+                url: '${ctxPath}/document/docMonitor/taskStatusList',
+                mtype: "POST",
+                styleUI: 'Bootstrap',
+                datatype: "jsonp",
+                postData: {"taskStatus": taskStatus, "appId": "$!{appDO.appId}"},
+                width: width,
+                colModel: [
+                    {
+                        label: '任务ID', name: 'taskId', sortable: false
+                    }
+                    ,
+                    {
+                        label: '源文件地址', name: 'taskContent', sortable: false
+                    }
+                    ,
+                    {
+                        label: '源文件格式', name: 'taskContentExt', sortable: false
+                    }
+                    ,
+                    {
+                        label: '源文件大小', name: 'taskContentLength', sortable: false
+                    }
+                    ,
+                    {
+                        label: '目标文件地址', name: 'taskResult', sortable: false
+                    }
+                    ,
+                    {
+                        label: '目标文件格式', name: 'taskResultExt', sortable: false
+                    }
+                    ,
+                    {
+                        label: '目标文件大小', name: 'taskResultLength', sortable: false
+                    }
+                    ,
+                    {
+                        label: '转换状态',
+                        name: 'taskStatus',
+                        sortable: false,
+                        formatter: function (cellvalue, options, rowObject) {
+                            if (cellvalue == "WAITING") {
+                                return "<span style='color:#5bc0de'>" + cellvalue + "</span>";
+                            } else if (cellvalue == "EXECUTING") {
+                                return "<span style='color:#f0ad4e'>" + cellvalue + "</span>";
+                            } else if (cellvalue == "SUCCESS") {
+                                return "<span style='color:#5cb85c'>" + cellvalue + "</span>";
+                            } else if (cellvalue == "FAILURE") {
+                                return "<span style='color:#d9534f'>" + cellvalue + "</span>";
+                            }
+                        }
+                    }
+                    ,
+                    {
+                        label: '转换时长', name: 'convertTime', sortable: false
+                    },
+                    {
+                        label: '操作',
+                        name: 'taskId',
+                        sortable: false,
+                        width: 250,
+                        formatter: function (cellvalue, options, rowObject) {
+                            var btnContent = "<button type='button' data-taskId='" + cellvalue + "' class='btn btn-info btn-xs btn-detail' >详情</button>";
+                            if (rowObject.taskStatus == 'EXECUTING') {
+                                var currentTimeStamp = new Date().getTime();
+                                if ((currentTimeStamp - rowObject.executeTimeStamp) / 1000 > 180) {
+                                    btnContent = btnContent + "&nbsp;<button type='button' data-taskId='" + cellvalue + "' class='btn btn-danger btn-xs btn-reAction'>重新执行</button>";
+                                }
+                            }
+                            return btnContent;
+                        }
+                    }
+                ],
+                viewrecords: true,
+                height: "auto",
+                rowNum: 10,
+                rownumbers: true,
+                //autowidth: true,
+                shrinkToFit: true,
+                pager: pager
+            };
+        }
+
+        function tabTitleCount() {
+            $.post("${ctxPath}/document/docMonitor/taskStatusCount", {"appId": "$!{appDO.appId}"}, function (result) {
+                if (result.success) {
+                    var aArray = $("#myTab").find("a");
+                    for (var i = 0; i < aArray.length; i++) {
+                        if ($(aArray[i]).attr("href") == "#waiting") {
+                            $(aArray[i]).text("Waiting (" + result.data.waitingCount + ")");
+                        } else if ($(aArray[i]).attr("href") == "#executing") {
+                            $(aArray[i]).text("Executing (" + result.data.executingCount + ")");
+                        } else if ($(aArray[i]).attr("href") == "#success") {
+                            $(aArray[i]).text("Success (" + result.data.successCount + ")");
+                        } else if ($(aArray[i]).attr("href") == "#failure") {
+                            $(aArray[i]).text("Failure (" + result.data.failureCount + ")");
+                        }
+                    }
+                }
+            }, "json");
+        }
+
+        tabTitleCount();
+
+        //Waiting
+        $("#wJqGrid").jqGrid(jqgridOptaionBuilder("WAITING", $("ol.breadcrumb").width(), "#wJqGridPager"));
+        $("#wJqGrid").closest(".ui-jqgrid-bdiv").css({'overflow-x': 'hidden'});
+
+        //Executing
+        $("#eJqGrid").jqGrid(jqgridOptaionBuilder("EXECUTING", $("ol.breadcrumb").width(), "#eJqGridPager"));
+        $("#eJqGrid").closest(".ui-jqgrid-bdiv").css({'overflow-x': 'hidden'});
+
+        //Success
+        $("#sJqGrid").jqGrid(jqgridOptaionBuilder("SUCCESS", $("ol.breadcrumb").width(), "#sJqGridPager"));
+        $("#sJqGrid").closest(".ui-jqgrid-bdiv").css({'overflow-x': 'hidden'});
+
+        //Failure
+        $("#fJqGrid").jqGrid(jqgridOptaionBuilder("FAILURE", $("ol.breadcrumb").width(), "#fJqGridPager"));
+        $("#fJqGrid").closest(".ui-jqgrid-bdiv").css({'overflow-x': 'hidden'});
+
+        $(window).resize(function () {          //当浏览器大小变化时
+            $("#wJqGrid").setGridWidth($("ol.breadcrumb").width());
+            $("#eJqGrid").setGridWidth($("ol.breadcrumb").width());
+            $("#sJqGrid").setGridWidth($("ol.breadcrumb").width());
+            $("#fJqGrid").setGridWidth($("ol.breadcrumb").width());
+        });
+
+        //tab切换事件
+        $("#myTab").delegate("a", "click", function () {
+            tabTitleCount();
+            if ($(this).attr("href") == "#waiting") {
+                $("#wJqGrid").jqGrid('setGridParam', {
+                    page: 1
+                }).trigger("reloadGrid");
+            } else if ($(this).attr("href") == "#executing") {
+                $("#eJqGrid").jqGrid('setGridParam', {
+                    page: 1
+                }).trigger("reloadGrid");
+            } else if ($(this).attr("href") == "#success") {
+                $("#sJqGrid").jqGrid('setGridParam', {
+                    page: 1
+                }).trigger("reloadGrid");
+            } else if ($(this).attr("href") == "#failure") {
+                $("#fJqGrid").jqGrid('setGridParam', {
+                    page: 1
+                }).trigger("reloadGrid");
+            }
+        });
+
+        //详情事件
+        $("#myTabContent").delegate(".btn-detail", "click", function () {
+            var taskId = $(this).attr("data-taskId");
+            $.post("${ctxPath}/document/docMonitor/findTaskByTaskId", {
+                "taskId": taskId
+            }, function (data) {
+                if (data.success) {
+                    data = data.data;
+                    data.taskId = data.taskId == undefined ? "" : data.taskId;
+                    data.taskContent = data.taskContent == undefined ? "" : data.taskContent;
+                    data.taskContentLength = data.taskContentLength == undefined ? "" : data.taskContentLength;
+                    data.taskContentExt = data.taskContentExt == undefined ? "" : data.taskContentExt;
+                    data.taskResult = data.taskResult == undefined ? "" : data.taskResult;
+                    data.taskResultLength = data.taskResultLength == undefined ? "" : data.taskResultLength;
+                    data.taskResultExt = data.taskResultExt == undefined ? "" : data.taskResultExt;
+                    data.taskStatus = data.taskStatus == undefined ? "" : data.taskStatus;
+                    data.createTimeStamp = data.createTimeStamp == undefined ? "" : format(parseInt(data.createTimeStamp));
+                    data.executeTimeStamp = data.executeTimeStamp == undefined ? "" : format(parseInt(data.executeTimeStamp));
+                    data.finishTimeStamp = data.finishTimeStamp == undefined ? "" : format(parseInt(data.finishTimeStamp));
+                    data.errorCode = data.errorCode == undefined ? "" : data.errorCode;
+                    data.errorMessage = data.errorMessage == undefined ? "" : data.errorMessage;
+                    data.convertTime = data.convertTime == undefined ? "" : data.convertTime;
+
+                    $('#myModalBody').html(_.template($('#tpl').html())(data));
+                    $("#myModal").modal("show");
+                }
+            }, "json");
+        });
+
+        //重新执行事件
+        $("#myTabContent").delegate(".btn-reAction", "click", function () {
+            var taskId = $(this).attr("data-taskId");
+            $.post("${ctxPath}/document/docOperation/doc2pdfReAsync", {
+                "taskId": taskId
+            }, function (data) {
+                tabTitleCount();
+                $("#eJqGrid").jqGrid('setGridParam', {
+                    page: 1
+                }).trigger("reloadGrid");
+            }, "json");
+        });
+    });
+</script>
+
+<script type="text/template" id="tpl">
+    <div>
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-3 control-label">任务ID</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= taskId %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">任务内容</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= taskContent %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">任务内容大小</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= taskContentLength %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">任务内容格式</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= taskContentExt %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">任务结果</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= taskResult %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">任务结果大小</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= taskResultLength %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">任务结果类型</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= taskResultExt %></p>
+                </div>
+            </div>
+            <div class="form-group <% if(taskStatus=='SUCCESS') { %>
+            bg-success
+            <% } else if(taskStatus=='FAILURE') { %>
+            bg-danger
+    <% } else if(taskStatus=='EXECUTING') { %>
+            bg-warning
+    <% } else if(taskStatus=='WAITING') { %>
+            bg-info
+    <% } %>
+">
+                <label class="col-sm-3 control-label">任务状态</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= taskStatus %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">任务创建时间</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= createTimeStamp %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">执行开始时间</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= executeTimeStamp %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">执行结束时间</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= finishTimeStamp %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">错误码</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= errorCode %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">具体错误信息</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= errorMessage %></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">转换时长</label>
+                <div class="col-sm-9">
+                    <p class="form-control-static"><%= convertTime %></p>
+                </div>
+            </div>
+        </form>
+    </div>
+</script>

@@ -1,0 +1,254 @@
+<div class="col-md-12">
+    <ol class="breadcrumb">
+        <li class="active">应用</li>
+        <li class="active">文档转换机器分布</li>
+    </ol>
+</div>
+<div class="col-md-12 text-center">
+    <div class="body-content">
+        <div style="margin: 20px;">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title text-left">文档转换中心机器部署情况(<span style="color: darkgray;">在线</span>)</h3>
+                </div>
+                <div class="panel-body text-left" id="serverInfoPanel">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="body-content">
+        <div style="margin: 20px;">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title text-left">文档转换中心机器执行情况(<span style="color: darkgray;">离线</span>)</h3>
+                </div>
+                <div class="panel-body text-left" id="serverTaskPanel">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        function refreshAppServer() {
+            $.post("${ctxPath}/document/docMonitor/onlineDocumentServer", null, function (result) {
+                var onlineDocumentServerString = "";
+                if (result.success) {
+                    var data = result.data;
+                    // $('#serverInfoPanel').html(_.template($('#onlineServerIpInfoTemplate').html(), {variable: 'data'})(data));
+                    $('#serverInfoPanel').html(_.template($('#onlineServerIpInfoTemplatePanel').html(), {variable: 'data'})(data));
+                }
+            }, "json");
+
+            $.post("${ctxPath}/document/docMonitor/executingIpZkTaskIds", null, function (result) {
+                var onlineDocumentServerString = "";
+                if (result.success) {
+                    var data = result.data;
+                    //$('#serverTaskPanel').html(_.template($('#onlineServerIpTaskTemplate').html(), {variable: 'data'})(data));
+                    $('#serverTaskPanel').html(_.template($('#onlineServerIpTaskTemplatePanel').html(), {variable: 'data'})(data));
+                }
+            }, "json");
+        }
+
+        setInterval(refreshAppServer, 3000);
+
+        refreshAppServer();
+
+    });
+</script>
+
+<script type="text/template" id="onlineServerIpInfoTemplatePanel">
+    <% _.each(data, function(n){%>
+    <div class="panel panel-default panel-success">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <%= n.ip %>
+            ##                （<span
+            ##                    style="<% if(n.osStatus=='只读') { %> color:darkgray <% } else { %> color:black <% } %>"><%= n.osStatus %></span>）
+            </h3>
+        </div>
+        <div class="panel-body">
+            <div>
+                操作系统名称：<%= n.osName %>
+            </div>
+            <div>
+                操作系统架构：<%= n.osArch %>
+            </div>
+            <div>
+                操作系统版本：<%= n.osVersion %>
+            </div>
+            <div>
+                JVM总内存：<%= n.jvmTotalMemory %>
+            </div>
+            <div>
+                JVM可用内存：<%= n.jvmFreeMemory %>
+            </div>
+            <div>
+                JVM最大内存：<%= n.jvmMaxMemory %>
+            </div>
+            <div>
+                处理器个数：<%= n.availableProcessors %>
+            </div>
+            <div>
+                异步转换是否开启：<span style="<% if(n.asyncStatus==='关闭中') { %>
+                        color:red;
+                        <%} else { %> color:green <% } %> "><%= n.asyncStatus %></span>
+            </div>
+            <div>
+                同步转换是否开启：<span style="<% if(n.syncStatus==='关闭中') { %>
+                        color:red;
+                        <%} else { %> color:green <% } %> "><%= n.syncStatus %></span>
+            </div>
+            <div>
+                同/异步最大执行总数限制：<%= n.maxExecutingStatusCount %>
+            </div>
+            <div>
+                文档转换大小最大值：<%= n.maxDocFileSize %>M
+            </div>
+            <div>
+                转换资源保护：<span style="<% if(n.osResourceProtection==='关闭中') { %>
+                        color:red;
+                        <%} else { %> color:green <% } %> "><%= n.osResourceProtection %></span>
+            </div>
+            <div>
+                转换资源保护时间间隔：<%= n.osResourceProtectionTime %>s
+            </div>
+            <div>
+                转换工具(Windows系统)：<%= n.converterTools %>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+</script>
+
+<script type="text/template" id="onlineServerIpInfoTemplate">
+    <div class="panel-group" id="accordion">
+        <% _.each(data, function(n){%>
+        <div class="panel panel-default panel-info">
+            <div class="panel-heading ">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion"
+                       href="#collapse<%= n.number %>">
+                        <%= n.ip %>
+                    ##                        （<%= n.osStatus %>）
+                    </a>
+                </h4>
+            </div>
+            <div id="collapse<%= n.number %>" class="panel-collapse collapse <% if(n.number==='0'){ %> in  <% } %> ">
+                <div class="panel-body">
+                    <div>
+                        操作系统名称：<%= n.osName %>
+                    </div>
+                    <div>
+                        操作系统架构：<%= n.osArch %>
+                    </div>
+                    <div>
+                        操作系统版本：<%= n.osVersion %>
+                    </div>
+                    <div>
+                        JVM总内存：<%= n.jvmTotalMemory %>
+                    </div>
+                    <div>
+                        JVM可用内存：<%= n.jvmFreeMemory %>
+                    </div>
+                    <div>
+                        JVM最大内存：<%= n.jvmMaxMemory %>
+                    </div>
+                    <div>
+                        处理器个数：<%= n.availableProcessors %>
+                    </div>
+                    <div>
+                        异步转换是否开启：<span style="<% if(n.asyncStatus==='关闭中') { %>
+                        color:red;
+                        <%} else { %> color:green <% } %> "><%= n.asyncStatus %></span>
+                    </div>
+                    <div>
+                        同步转换是否开启：<span style="<% if(n.syncStatus==='关闭中') { %>
+                        color:red;
+                        <%} else { %> color:green <% } %> "><%= n.syncStatus %></span>
+                    </div>
+                    <div>
+                        同/异步最大执行总数限制：<%= n.maxExecutingStatusCount %>
+                    </div>
+                    <div>
+                        文档转换大小最大值：<%= n.maxDocFileSize %>M
+                    </div>
+                    <div>
+                        转换资源保护：<span style="<% if(n.osResourceProtection==='关闭中') { %>
+                        color:green;
+                        <%} else { %> color:red <% } %> "><%= n.osResourceProtection %></span>
+                    </div>
+                    <div>
+                        转换资源保护时间间隔：<%= n.osResourceProtectionTime %>s
+                    </div>
+                    <div>
+                        转换工具(Windows系统)：<%= n.converterTools %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% }); %>
+    </div>
+</script>
+
+<script type="text/template" id="onlineServerIpTaskTemplatePanel">
+    <% _.each(data, function(n){%>
+    <div class="panel panel-default panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+                <%= n.ip %>
+                / <span style="color: darkgray;"><%= n.count %></span>
+            </h3>
+        </div>
+        <div class="panel-body">
+            <div>
+                机器IP：<%= n.ip %>
+            </div>
+            <div>
+                任务数：<%= n.count %>
+            </div>
+            <div>
+                任务列表：
+                <br/>
+                <%= n.executingTaskIds %>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+</script>
+
+<script type="text/template" id="onlineServerIpTaskTemplate">
+    <div class="panel-group" id="accordionSecond">
+        <% _.each(data, function(n){%>
+        <div class="panel panel-default panel-info">
+            <div class="panel-heading ">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordionSecond"
+                       href="#collapseSecond<%= n.number %>">
+                        <%= n.ip %>
+                    </a>
+                    / <span style="color: darkgray;"><%= n.count %></span>
+                </h4>
+            </div>
+            <div id="collapseSecond<%= n.number %>"
+                 class="panel-collapse collapse <% if(n.number==='0'){ %> in  <% } %> ">
+                <div class="panel-body">
+                    <div>
+                        机器IP：<%= n.ip %>
+                    </div>
+                    <div>
+                        任务数：<%= n.count %>
+                    </div>
+                    <div>
+                        任务列表：
+                        <br/>
+                        <%= n.executingTaskIds %>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <% }); %>
+    </div>
+</script>

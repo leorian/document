@@ -1,0 +1,132 @@
+<!DOCTYPE web-app PUBLIC
+        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+        "http://java.sun.com/dtd/web-app_2_3.dtd" >
+<web-app>
+    <display-name>document-web</display-name>
+    <context-param>
+        <param-name>document</param-name>
+        <param-value>document-web</param-value>
+    </context-param>
+    <context-param>
+        <param-name>appId</param-name>
+        <param-value>25</param-value>
+    </context-param>
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>
+            classpath:applicationContext-basic.xml
+        </param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>log4jConfigLocation</param-name>
+        <param-value>/WEB-INF/classes/log4j.xml</param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>encoding</filter-name>
+        <filter-class>
+            org.springframework.web.filter.CharacterEncodingFilter
+        </filter-class>
+        <init-param>
+            <param-name>encoding</param-name>
+            <param-value>UTF-8</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>encoding</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>eweb</filter-name>
+        <filter-class>com.yx.eweb.main.EWebFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>eweb</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>exception</filter-name>
+        <filter-class>com.bozhong.document.filter.ExceptionFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>exception</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+    <listener>
+        <listener-class>com.bozhong.config.ConfigLoadListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
+    </listener>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+
+    <!--
+        The HttpSessionEventPublisher will publish
+        HttpSessionCreatedEvent and HttpSessionDestroyedEvent
+        to the WebApplicationContext
+    -->
+    <servlet>
+        <servlet-name>loadParameter</servlet-name>
+        <servlet-class>com.yx.eweb.servlet.InitialServlet</servlet-class>
+        <init-param>
+            <param-name>language</param-name>
+            <param-value>zh</param-value>
+        </init-param>
+        <init-param>
+            <param-name>debug</param-name>
+            <param-value>2</param-value>
+        </init-param>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+
+    <servlet>
+        <servlet-name>VelocityServlet</servlet-name>
+        <servlet-class>com.yx.eweb.main.VelocityServlet</servlet-class>
+        <!-- 加载自定义的velocity.propeties  -->
+        <init-param>
+            <param-name>org.apache.velocity.properties</param-name>
+            <param-value>/WEB-INF/classes/velocity.properties</param-value>
+        </init-param>
+        <init-param>
+            <param-name>org.apache.velocity.toolbox</param-name>
+            <param-value>/WEB-INF/classes/toolbox.xml</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VelocityServlet</servlet-name>
+        <url-pattern>*.htm</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>JerseyRESTService</servlet-name>
+        <servlet-class>
+            com.sun.jersey.spi.spring.container.servlet.SpringServlet
+        </servlet-class>
+
+        <!--<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>-->
+        <!--<init-param>-->
+        <!--<param-name>com.sun.jersey.config.property.packages</param-name>-->
+        <!--<param-value>com.bozhong.realtimepush.restful.resources</param-value>-->
+        <!--</init-param>-->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>JerseyRESTService</servlet-name>
+        <url-pattern>/document/*</url-pattern>
+    </servlet-mapping>
+    <welcome-file-list>
+        <welcome-file>index.html</welcome-file>
+    </welcome-file-list>
+</web-app>

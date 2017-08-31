@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<toolbox>
+    <tool>
+        <key>date</key>
+        <scope>application</scope>
+        <class>org.apache.velocity.tools.generic.DateTool</class>
+        <parameter name="format" value="yyyy-M-d"/>
+    </tool>
+    <tool>
+        <key>dateUtil</key>
+        <scope>application</scope>
+        <class>com.yx.eweb.util.DateUtil</class>
+    </tool>
+    <tool>
+        <key>stringUtil</key>
+        <scope>application</scope>
+        <class>com.yx.eweb.util.StringUtil</class>
+    </tool>
+</toolbox>

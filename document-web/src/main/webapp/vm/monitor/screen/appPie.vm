@@ -1,0 +1,197 @@
+<div class="col-md-12">
+    <ol class="breadcrumb">
+        <li class="active">应用</li>
+        <li class="active">应用直观统计图</li>
+    </ol>
+</div>
+<div class="col-md-12 text-center">
+#*数字区*#
+    <button type="button" class="btn btn-primary">总的请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-info">Waiting请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-warning">Executing请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-success">Success请求数<br/>(<span>0</span>)</button>
+    <button type="button" class="btn btn-danger">Failure请求数<br/>(<span>0</span>)</button>
+    <br/>
+    <br/>
+#*总的图表区*#
+    <div>
+        <div id="main" style="width: 800px;height:500px;margin:25px auto;"></div>
+    </div>
+#*Waiting图表区*#
+    <div>
+        <div id="wMain" style="width: 800px;height:500px;margin:25px auto;"></div>
+    </div>
+#*Executing图表区*#
+    <div>
+        <div id="eMain" style="width: 800px;height:500px;margin:25px auto;"></div>
+    </div>
+#*Success图表区*#
+    <div>
+        <div id="sMain" style="width: 800px;height:500px;margin:25px auto;"></div>
+    </div>
+#*Failure图表区*#
+    <div>
+        <div id="fMain" style="width: 800px;height:500px;margin:25px auto;"></div>
+    </div>
+</div>
+<script>
+    $(function () {
+
+        //图表展示
+        var myChart = echarts.init(document.getElementById('main'));
+        var wMyChart = echarts.init(document.getElementById("wMain"));
+        var eMyChart = echarts.init(document.getElementById("eMain"));
+        var sMyChart = echarts.init(document.getElementById("sMain"));
+        var fMyChart = echarts.init(document.getElementById("fMain"));
+
+        function opTionBuilder(title, labelArray, valueLabelArray) {
+            var option = {
+                title: {
+                    text: title,
+                    subtext: '授权应用',
+                    x: 'center'
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: "{a} <br/>{b} : {c} ({d}%)"
+                },
+                legend: {
+                    orient: 'vertical',
+                    x: 'left',
+                    data: labelArray
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        mark: {show: true},
+                        dataView: {show: true, readOnly: false},
+                        magicType: {
+                            show: true,
+                            type: ['pie', 'funnel'],
+                            option: {
+                                funnel: {
+                                    x: '25%',
+                                    width: '50%',
+                                    funnelAlign: 'left',
+                                    max: 1548
+                                }
+                            }
+                        },
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                calculable: true,
+                series: [
+                    {
+                        name: '授权应用',
+                        type: 'pie',
+                        radius: '55%',
+                        center: ['50%', '60%'],
+                        data: valueLabelArray
+                    }
+                ]
+            };
+            return option;
+        }
+
+        function refreshPage() {
+            //数字展示
+            $.post("${ctxPath}/document/docMonitor/authTaskStatusCount", null, function (result) {
+                if (result.success) {
+                    $("button.btn-primary").children("span").text(result.data.allCount);
+                    $("button.btn-info").children("span").text(result.data.waitingCount);
+                    $("button.btn-warning").children("span").text(result.data.executingCount);
+                    $("button.btn-success").children("span").text(result.data.successCount);
+                    $("button.btn-danger").children("span").text(result.data.failureCount);
+                }
+
+            }, "json");
+
+            //总的图表展示
+            $.post("${ctxPath}/document/docMonitor/appRequestCountPieData", null, function (result) {
+                if (result.success) {
+                    var data = result.data;
+                    var labelArray = [];
+                    var valueLabelArray = [];
+                    for (var key in data) {
+                        labelArray.push(key);
+                        valueLabelArray.push({value: data[key], name: key});
+                    }
+
+                    myChart.setOption(opTionBuilder('文档转换请求总数占比', labelArray, valueLabelArray));
+                }
+
+            }, "json");
+
+            //Waiting图表展示
+            $.post("${ctxPath}/document/docMonitor/appRequestCountPieData", {"taskStatus": "WAITING"}, function (result) {
+                if (result.success) {
+                    var data = result.data;
+                    var labelArray = [];
+                    var valueLabelArray = [];
+                    for (var key in data) {
+                        labelArray.push(key);
+                        valueLabelArray.push({value: data[key], name: key});
+                    }
+
+                    wMyChart.setOption(opTionBuilder('文档转换请求Waiting总数占比', labelArray, valueLabelArray));
+                }
+
+            }, "json");
+
+            //Executing图表展示
+            $.post("${ctxPath}/document/docMonitor/appRequestCountPieData", {"taskStatus": "EXECUTING"}, function (result) {
+                if (result.success) {
+                    var data = result.data;
+                    var labelArray = [];
+                    var valueLabelArray = [];
+                    for (var key in data) {
+                        labelArray.push(key);
+                        valueLabelArray.push({value: data[key], name: key});
+                    }
+
+                    eMyChart.setOption(opTionBuilder('文档转换请求Executing总数占比', labelArray, valueLabelArray));
+                }
+
+            }, "json");
+
+            //Success图表展示
+            $.post("${ctxPath}/document/docMonitor/appRequestCountPieData", {"taskStatus": "SUCCESS"}, function (result) {
+                if (result.success) {
+                    var data = result.data;
+                    var labelArray = [];
+                    var valueLabelArray = [];
+                    for (var key in data) {
+                        labelArray.push(key);
+                        valueLabelArray.push({value: data[key], name: key});
+                    }
+
+                    sMyChart.setOption(opTionBuilder('文档转换请求Success总数占比', labelArray, valueLabelArray));
+                }
+
+            }, "json");
+
+            //FAILURE图表展示
+            $.post("${ctxPath}/document/docMonitor/appRequestCountPieData", {"taskStatus": "FAILURE"}, function (result) {
+                if (result.success) {
+                    var data = result.data;
+                    var labelArray = [];
+                    var valueLabelArray = [];
+                    for (var key in data) {
+                        labelArray.push(key);
+                        valueLabelArray.push({value: data[key], name: key});
+                    }
+
+                    fMyChart.setOption(opTionBuilder('文档转换请求Failure总数占比', labelArray, valueLabelArray));
+                }
+
+            }, "json");
+        }
+
+        refreshPage();
+
+        setInterval(refreshPage, 3000);
+
+    });
+</script>

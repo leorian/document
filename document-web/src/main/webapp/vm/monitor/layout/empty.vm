@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+    <title>${html_title}</title>
+    <link rel="Shortcut Icon" href="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/images/logo.ico">
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" href="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/css/bootstrap.min.css">
+
+    <!-- 可选的Bootstrap主题文件（一般不用引入） -->
+    <link rel="stylesheet" href="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/css/bootstrap-theme.min.css">
+
+#*分页插件jqgrid*#
+    <link rel="stylesheet" href="${ctxPath}/webFrame/jqgrid-5.2.0/jqgrid/css/ui.jqgrid-bootstrap.css"/>
+    <style type="text/css">
+
+
+        @media (min-width: 992px) {
+            #nav-bar-left-list {
+                width: 224px;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            #nav-bar-left-list {
+                width: 256px;
+            }
+        }
+
+
+    </style>
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="${ctxPath}/webFrame/bootstrap-3.3.5/jquery-1.11.3.min.js"></script>
+
+#*分页插件jqgrid*#
+    <script src="${ctxPath}/webFrame/jqgrid-5.2.0/jqgrid/js/i18n/grid.locale-cn.js"></script>
+    <script src="${ctxPath}/webFrame/jqgrid-5.2.0/jqgrid/js/jquery.jqGrid.min.js"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="${ctxPath}/webFrame/bootstrap-3.3.5/bootstrap/js/bootstrap.min.js"></script>
+
+    <script src="${ctxPath}/webFrame/underscore-min.js"></script>
+
+
+    <script type="text/javascript">
+        var ctxPath = '$!{ctxPath}';
+    </script>
+</head>
+<body>
+<!-- 头部 -->
+<header id="header" class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-collapse collapse header-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="javascript:void(0);"> 登录者：$!{uId}</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="button button-little bg-red" href="${ctxPath}/monitor/login.htm">
+                        <span class="icon-power-off"></span>
+                        退出登录
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<!-- body -->
+<div class="container">
+    <br/>
+    <br/>
+    <br/>
+    #parse("$screen_placeholder")
+    <br/>
+    <br/>
+    <br/>
+</div>
+<!-- 尾部 -->
+<footer class="footer navbar navbar-default navbar-fixed-bottom">
+    <div class="container">
+        <div class="navbar-collapse collapse header-navbar-collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="javascript:void(0);"><img src="${ctxPath}/webFrame/timg.jpg" width="50px" height="30px"/>&nbsp;&nbsp;317护</a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a class="button button-little bg-red" href="javascript:void(0);">
+                        <span class="icon-power-off"></span>
+                        ${switch_crop}<br/>
+                        &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;
+                        ${switch_department}
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

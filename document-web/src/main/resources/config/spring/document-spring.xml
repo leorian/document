@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:hsf="http://www.taobao.com/hsf"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       		http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       		http://www.taobao.com/hsf
+       		http://www.taobao.com/hsf/hsf.xsd" default-autowire="byName">
+
+    <bean class="com.bozhong.document.task.Command" init-method="init"/>
+
+    <bean id="openOfficeConnectionFactory" class="com.bozhong.document.pool.SocketOpenOfficeConnectionFactory">
+        <property name="hostIpPortsString" value="${hostIpPortsString}"/>
+    </bean>
+
+    <bean id="openOfficeConnectionPoolConfig" class="com.bozhong.document.pool.OpenOfficeConnectionPoolConfig">
+
+    </bean>
+
+    <bean id="openOfficeConnectionPool" class="com.bozhong.document.pool.OpenOfficeConnectionPool" init-method="init">
+        <constructor-arg index="0" ref="openOfficeConnectionFactory"/>
+        <constructor-arg index="1" ref="openOfficeConnectionPoolConfig"/>
+    </bean>
+
+    <!--<bean id="documentWorkQueue" class="com.bozhong.document.task.DocumentWorkQueue">-->
+    <!--<constructor-arg index="0" value="${nDocumentPoolWorkerThreads}"/>-->
+    <!--</bean>-->
+
+    <!--<bean id="documentRedisWorkQueue" class="com.bozhong.document.task.DocumentRedisWorkQueue">-->
+    <!--<constructor-arg index="0" value="${nDocumentPoolWorkerThreads}"/>-->
+    <!--<constructor-arg index="1" ref="openOfficeConnectionPool"/>-->
+    <!--<constructor-arg index="2" ref="workFlowTraceService"/>-->
+    <!--</bean>-->
+
+    <bean id="documentMongoDBWorkQueue" class="com.bozhong.document.task.DocumentMongoDBWorkQueue">
+        <constructor-arg index="0" value="${nDocumentPoolWorkerThreads}"/>
+        <constructor-arg index="1" ref="openOfficeConnectionPool"/>
+        <constructor-arg index="2" ref="workFlowTraceService"/>
+    </bean>
+
+</beans>

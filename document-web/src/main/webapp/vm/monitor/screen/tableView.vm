@@ -1,0 +1,119 @@
+<div class="col-md-12">
+    <ol class="breadcrumb">
+        <li class="active">监控</li>
+        <li class="active">列表化展示</li>
+    </ol>
+</div>
+<div class="col-md-12">
+    <div class="col-md-12 text-center">
+        <button type="button" class="btn btn-primary">总的请求数<br/>(<span>0</span>)</button>
+        <button type="button" class="btn btn-info">Waiting请求数<br/>(<span>0</span>)</button>
+        <button type="button" class="btn btn-warning">Executing请求数<br/>(<span>0</span>)</button>
+        <button type="button" class="btn btn-success">Success请求数<br/>(<span>0</span>)</button>
+        <button type="button" class="btn btn-danger">Failure请求数<br/>(<span>0</span>)</button>
+    </div>
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    <div style="margin:20px">
+        <table id="jqGrid"></table>
+        <div id="jqGridPager"></div>
+    </div>
+</div>
+<script>
+    $(function () {
+        $.jgrid.defaults.width = $("#jqGrid").parent().width();
+        $("#jqGrid").jqGrid({
+            url: '${ctxPath}/document/docMonitor/taskStatusList',
+            mtype: "POST",
+            styleUI: 'Bootstrap',
+            datatype: "jsonp",
+            colModel: [
+                {
+                    label: '任务ID', name: 'taskId', sortable: false
+                }
+                ,
+                {
+                    label: '源文件地址', name: 'taskContent', sortable: false
+                }
+                ,
+                {
+                    label: '源文件格式', name: 'taskContentExt', sortable: false
+                }
+                ,
+                {
+                    label: '源文件大小', name: 'taskContentLength', sortable: false
+                }
+                ,
+                {
+                    label: '目标文件地址', name: 'taskResult', sortable: false
+                }
+                ,
+                {
+                    label: '目标文件格式', name: 'taskResultExt', sortable: false
+                }
+                ,
+                {
+                    label: '目标文件大小', name: 'taskResultLength', sortable: false
+                }
+                ,
+                {
+                    label: '转换状态',
+                    name: 'taskStatus',
+                    sortable: false,
+                    formatter: function (cellvalue, options, rowObject) {
+                        if (cellvalue == "WAITING") {
+                            return "<span style='color:#5bc0de'>" + cellvalue + "</span>";
+                        } else if (cellvalue == "EXECUTING") {
+                            return "<span style='color:#f0ad4e'>" + cellvalue + "</span>";
+                        } else if (cellvalue == "SUCCESS") {
+                            return "<span style='color:#5cb85c'>" + cellvalue + "</span>";
+                        } else if (cellvalue == "FAILURE") {
+                            return "<span style='color:#d9534f'>" + cellvalue + "</span>";
+                        }
+                    }
+                }
+                ,
+                {
+                    label: '转换时长', name: 'convertTime', sortable: false
+                }
+            ],
+            viewrecords: true,
+            height: "auto",
+            rowNum: 10,
+            rownumbers: true,
+            autowidth: true,
+            shrinkToFit: true,
+            pager: "#jqGridPager"
+        });
+
+        $("#jqGrid").closest(".ui-jqgrid-bdiv").css({'overflow-x': 'hidden'});
+
+        $(window).resize(function () {          //当浏览器大小变化时
+            $("#jqGrid").setGridWidth($("ol.breadcrumb").width());
+        });
+
+        function refreshPage() {
+
+            $.post("${ctxPath}/document/docMonitor/taskStatusCount", null, function (result) {
+                if (result.success) {
+                    $("button.btn-primary").children("span").text(result.data.allCount);
+                    $("button.btn-info").children("span").text(result.data.waitingCount);
+                    $("button.btn-warning").children("span").text(result.data.executingCount);
+                    $("button.btn-success").children("span").text(result.data.successCount);
+                    $("button.btn-danger").children("span").text(result.data.failureCount);
+                }
+            }, "json");
+
+            $("#jqGrid").jqGrid('setGridParam', {
+                page: 1
+            }).trigger("reloadGrid"); //重新载入
+        }
+
+        refreshPage();
+
+        setInterval(refreshPage, 3000);
+
+    });
+</script>
